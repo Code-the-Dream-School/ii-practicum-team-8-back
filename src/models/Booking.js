@@ -10,9 +10,21 @@ const BookingSchema = new mongoose.Schema(
       type: Date,
       required: [true, "Please provide a check-out date"],
     },
-    numberOfGuests: {
+    numberOfAdults: {
       type: Number,
       required: [true, "Please provide number of guests"],
+      min: 1,
+    },
+    numberOfKids: {
+      type: Number,
+      default: 0,
+    },
+    numberOfGuests: {
+      type: Number,
+    },
+    numberOfRooms: {
+      type: Number,
+      required: [true, "Please provide number of rooms"],
       min: 1,
     },
     numberOfNights: {
@@ -34,10 +46,16 @@ const BookingSchema = new mongoose.Schema(
 );
 
 BookingSchema.pre("save", function (next) {
+  // calculate number of nights/stay
   if (this.startDate && this.endDate) {
     const diffTime = this.endDate - this.startDate; // in milliseconds
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // convert to days
     this.numberOfNights = diffDays;
+  }
+
+  // calculate total number of guests
+  if (this.numberOfAdults != null && this.numberOfKids != null) {
+    this.numberOfGuests = this.numberOfAdults + this.numberOfKids;
   }
   next();
 });

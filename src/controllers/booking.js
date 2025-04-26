@@ -31,13 +31,20 @@ const createBooking = async (req, res) => {
 //UPDATE BOOKING
 const updateBooking = async (req, res) => {
   const {
-    body: { startDate, endDate, numberOfGuests, status },
+    body: {
+      startDate,
+      endDate,
+      numberOfAdults,
+      numberOfKids,
+      numberOfRooms,
+      status,
+    },
     user: { userId },
     params: { id: bookingId },
   } = req;
-  if (!startDate || !endDate || !numberOfGuests) {
+  if (!startDate || !endDate || !numberOfAdults || !numberOfRooms) {
     throw new BadRequestError(
-      "Start date, end date, or number of guests cannot be empty"
+      "Start date, end date, or number of guests or rooms cannot be empty"
     );
   }
   const booking = await Booking.findByIdAndUpdate(
