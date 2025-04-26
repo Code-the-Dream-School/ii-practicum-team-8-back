@@ -24,10 +24,35 @@ const getBooking = async (req, res) => {
 };
 // CREATE BOOKING
 const createBooking = async (req, res) => {
+  const { startDate, endDate } = req.body;
+  // check if startDate less and not same as endDate
+  if (!startDate || !endDate) {
+    throw new BadRequestError("Start and end dates are required.");
+  }
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (end <= start) {
+    throw new BadRequestError("Check-out date must be after check-in date.");
+  }
+  // check for overlapping booking
+  const overlappingBooking = await Booking.findOne({
+    status: { $in: ["pending", "confirmed"] },
+    startDate: { $lt: new Date(endDate) },
+    endDate: { $gt: new Date(startDate) },
+  });
+
+  if (overlappingBooking) {
+    throw new BadRequestError(
+      "Selected dates are already booked. Please choose different dates."
+    );
+  }
+  // create booking if no overlapping dates
   req.body.createdBy = req.user.userId;
   const booking = await Booking.create(req.body);
   res.status(StatusCodes.CREATED).json({ booking });
 };
+
 //UPDATE BOOKING
 const updateBooking = async (req, res) => {
   const {
@@ -47,6 +72,27 @@ const updateBooking = async (req, res) => {
       "Start date, end date, or number of guests or rooms cannot be empty"
     );
   }
+  // check if startDate less and not same as endDate
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (end <= start) {
+    throw new BadRequestError("Check-out date must be after check-in date.");
+  }
+  // checks for overlapping booking
+  const overlappingBooking = await Booking.findOne({
+    _id: { $ne: bookingId },
+    status: { $in: ["pending", "confirmed"] },
+    startDate: { $lt: new Date(endDate) },
+    endDate: { $gt: new Date(startDate) },
+  });
+
+  if (overlappingBooking) {
+    throw new BadRequestError(
+      "Selected dates are already booked. Please choose different dates."
+    );
+  }
+  // update booking if no overlapping
   const booking = await Booking.findByIdAndUpdate(
     { _id: bookingId, createdBy: userId },
     req.body,
@@ -63,7 +109,7 @@ const deleteBooking = async (req, res) => {
     user: { userId },
     params: { id: bookingId },
   } = req;
-  const booking = await Booking.findOneAndRemove({
+  const booking = await Booking.findOneAndDelete({
     _id: bookingId,
     createdBy: userId,
   });
