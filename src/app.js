@@ -11,12 +11,20 @@ const app = express();
 const favicon = require("express-favicon");
 const logger = require("morgan");
 
+// swagger
+const swaggerUi = require("swagger-ui-express");
+const fs = require("fs");
+const swaggerDocument = JSON.parse(
+  fs.readFileSync("./src/docs/t8-swagger.json", "utf8")
+);
+
 // const connectDB = require("./db/connect");
 const authUser = require("./middleware/authentication");
 
 //routers
 const authRouter = require("./routes/auth");
 const mainRouter = require("./routes/mainRouter.js");
+const bookingRouter = require("./routes/booking");
 
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");
@@ -43,6 +51,10 @@ app.use(favicon(__dirname + "/public/favicon.ico"));
 // routes
 app.use("/api/v1", mainRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/bookings", authUser, bookingRouter);
+
+//swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
