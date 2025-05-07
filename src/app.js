@@ -18,6 +18,7 @@ const authUser = require("./middleware/authentication");
 const authRouter = require("./routes/auth");
 const mainRouter = require("./routes/mainRouter.js");
 const bookingRouter = require("./routes/booking");
+const itineraryRouter = require("./routes/itinerary"); // itinerary router
 
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");
@@ -45,6 +46,7 @@ app.use(favicon(__dirname + "/public/favicon.ico"));
 app.use("/api/v1", mainRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/bookings", authUser, bookingRouter);
+app.use("/api/v1/itinerary",itineraryRouter) // itinerary route
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
