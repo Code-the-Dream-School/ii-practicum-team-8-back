@@ -13,10 +13,7 @@ const logger = require("morgan");
 
 // swagger
 const swaggerUi = require("swagger-ui-express");
-const fs = require("fs");
-const swaggerDocument = JSON.parse(
-  fs.readFileSync("./src/docs/t8-swagger.json", "utf8")
-);
+const swaggerDocument = require("./swagger.config");
 
 // const connectDB = require("./db/connect");
 const authUser = require("./middleware/authentication");
