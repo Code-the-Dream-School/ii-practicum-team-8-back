@@ -68,11 +68,10 @@ const validateEmailParams = (to, subject, html) => {
 const createTransporter = async () => {
   try {
     const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
+     service: 'Gmail',
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.EMAIL_USER, // gmail address
+        pass: process.env.EMAIL_PASS // gmail app password
       }
     });
 
@@ -109,7 +108,7 @@ const sendEmail = async (to, subject, html) => {
 
     // Attempt to send email
     const info = await transporter.sendMail({
-      from: 'pietro77@ethereal.email', // Using Ethereal email address
+      from: 'stephya166@gmail.com', // Using Gmail email address
       to,
       subject,
       html,
