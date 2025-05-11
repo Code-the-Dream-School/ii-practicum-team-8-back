@@ -54,7 +54,7 @@ const TravelPlanSchema = new mongoose.Schema(
     },
     aiGenTravelPlan: {
       type: Object,
-      default: null,
+      default: {},
     },
     createdBy: {
       type: mongoose.Types.ObjectId,
