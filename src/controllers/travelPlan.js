@@ -49,6 +49,7 @@ const createTravelPlan = async (req, res) => {
   // check for overlapping travel plan
   const start = new Date(startDate);
   const end = new Date(endDate);
+  const { userId } = req.user;
   const overlappingTravelPlan = await TravelPlan.findOne({
     createdBy: userId, // same user only
     startDate: { $lte: end },
