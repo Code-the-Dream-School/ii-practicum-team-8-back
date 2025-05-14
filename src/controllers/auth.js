@@ -141,12 +141,14 @@ const resetPassword = async (req, res) => {
     if (password.length < 8) {
       throw new BadRequestError("Password must be at least 8 characters long");
     }
-    if (!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
+    //updated regex to include special characters
+    if (!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)) {
+      {
       throw new BadRequestError(
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+        "Password must contain at least one uppercase letter, one lowercase letter, number and one special character"
       );
     }
-
+  }
     // Verify token
     let payload;
     try {
