@@ -2,13 +2,35 @@ const Booking = require("../models/Booking");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, NotFoundError } = require("../errors");
 
-// GET ALL BOOKINGSS
+
+
+// GET ALL BOOKINGS/everyone bookings
+
 const getAllBookings = async (req, res) => {
+  try{
+  const bookings = await Booking.find().sort({createdAt: -1});
+  res.status(StatusCodes.OK).json({ bookings, count: bookings.length });
+} catch (error) {
+  console.error("Error fetching bookings:", error);
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    error: error.message,
+  });
+}}
+
+// GET ALL MY BOOKINGS/ user bookings
+const getMyBookings = async (req, res) => {
+  try{
   const bookings = await Booking.find({ createdBy: req.user.userId }).sort(
-    "createdAt"
+    {createdAt: -1}
   );
   res.status(StatusCodes.OK).json({ bookings, count: bookings.length });
-};
+}catch (error) {
+  console.error("Error fetching bookings:", error);
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    error: error.message,
+  });
+}
+}
 // GET SINGLE BOOKING
 const getBooking = async (req, res) => {
   const {
@@ -121,6 +143,7 @@ const deleteBooking = async (req, res) => {
 
 module.exports = {
   getAllBookings,
+  getMyBookings,
   getBooking,
   createBooking,
   updateBooking,
